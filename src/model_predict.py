@@ -89,9 +89,9 @@ def predict_species(input_data):
     return prediction
 
 
-# ------------------------------------------------------
+
 # Validation Helpers
-# ------------------------------------------------------
+
 
 def validate_measurement(label, value, min_val=0, max_val=None):
     """

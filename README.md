@@ -37,7 +37,7 @@ python -m src.model_train
 - Ejecutar la API Flask (usa el modelo guardado en `models/iris_rf.joblib`):
 
 ```pwsh
-python -m src.app
+streamlit run src/app.py
 ```
 
 Notas:

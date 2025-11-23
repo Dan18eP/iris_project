@@ -120,3 +120,31 @@ python -m pytest tests/prediction_test.py
 - Re-run `python -m src.model_train` whenever you change preprocessing logic or want to refresh the trained artifacts.
 - The Streamlit app assumes the trained model, scaler, and label encoder exist under `models/`; delete them if you need to regenerate from scratch.
 - Additional documentation about EDA, training, and prediction flows is available in the `docs/` folder for deeper dives.
+
+## Documentation
+Comprehensive documentation is available in the docs/ directory:
+
+# EDA Findings: Exploratory data analysis results
+Model Training: Training methodology and results
+Prediction Module: Documentation for prediction module
+Dashboard Guide: Dashboard features and deployment
+
+# Contributing
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+# Fork the repository
+Create your feature branch (git checkout -b feature/AmazingFeature)
+Commit your changes (git commit -m 'Add some AmazingFeature')
+Push to the branch (git push origin feature/AmazingFeature)
+Open a Pull Request
+
+
+# License
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Authors
+
+- Daniel Echeverría
+- Andres Negrete
+
+(Systems engineering students, Corporación Universitaria de la Costa)

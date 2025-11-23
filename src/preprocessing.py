@@ -1,6 +1,6 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, LabelEncoder
 from data_processing import load_iris
 
 
@@ -29,8 +29,9 @@ def preprocess_iris(df):
     """
     Performs data preprocessing for the Iris dataset.
     Steps:
-        1. Remove duplicates (if any)
-        2. Handle missing values (if any)
+        1. Remove duplicates (not necessary)
+        2. Handle missing values (not necessary)
+        3. Encode categorical labels
         3. Separate features and labels
         4. Train/Test split
         5. Standardize numerical features
@@ -39,8 +40,11 @@ def preprocess_iris(df):
         X_train, X_test, y_train, y_test, scaler
     """
 
+    #3. Encode Species column into numeric labels
+    label_encoder = LabelEncoder()
+    df['Species'] = label_encoder.fit_transform(df['Species'])
    
-        #1. Separate features (X) and target variable (y)
+    #4. Separate features (X) and target variable (y)
 
     X = df[
         [
@@ -51,7 +55,7 @@ def preprocess_iris(df):
     y = df['Species']
 
  
-    #2. Split into training and testing sets
+    #5. Split into training and testing sets
     #Stratified split preserves class proportions
 
     X_train, X_test, y_train, y_test = train_test_split(
@@ -62,14 +66,14 @@ def preprocess_iris(df):
     )
 
 
-    #3. Standardize numerical features
+    #6. Standardize numerical features
     #This ensures all variables share the same scale
 
     scaler = StandardScaler()
     X_train = scaler.fit_transform(X_train)  # Fit scaler only on training data
     X_test = scaler.transform(X_test)        # Transform test data using same scaler
 
-    return X_train, X_test, y_train, y_test, scaler
+    return X_train, X_test, y_train, y_test, scaler, label_encoder
 
 
 if __name__ == "__main__":
@@ -77,7 +81,7 @@ if __name__ == "__main__":
     df = load_data()
 
     #Run preprocessing pipeline
-    X_train, X_test, y_train, y_test, scaler = preprocess_iris(df)
+    X_train, X_test, y_train, y_test, scaler, label_encoder = preprocess_iris(df)
 
     print("Preprocessing completed successfully")
     print("Training set size:", X_train.shape)

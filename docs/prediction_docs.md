@@ -221,7 +221,7 @@ Range checks prevent obviously invalid inputs while allowing slight extrapolatio
 
 ## Integration Guidelines
 
-### REST API Integration
+### REST API Integration (Optional)
 
 ```python
 from flask import Flask, request, jsonify
@@ -320,9 +320,9 @@ for sample in batch:
 ## Conclusion
 
 The prediction module provides a robust, production-ready interface for Iris classification with:
-- ✅ Automatic feature scaling
-- ✅ Flexible input formats
-- ✅ Input validation and error handling
-- ✅ Simple API for integration
+-  Automatic feature scaling
+-  Flexible input formats
+-  Input validation and error handling
+-  Simple API for integration (optional)
 
 Expected accuracy: **97.37%** based on test set evaluation.

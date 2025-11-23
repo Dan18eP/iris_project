@@ -336,6 +336,7 @@ def train_models():
     best_model = results_df.iloc[0]["Trained Model"]
     joblib.dump(best_model, "models/best_model.joblib")
     joblib.dump(scaler, "models/scaler.joblib")
+    joblib.dump(label_encoder, "models/label_encoder.joblib")
 ```
 
 ### 8.2 Model Loading & Inference
@@ -346,6 +347,7 @@ import joblib
 # Load saved model and scaler
 model = joblib.load("models/best_model.joblib")
 scaler = joblib.load("models/scaler.joblib")
+encoder = joblib.load("models/label_encoder.joblib")
 
 # Predict on new data
 new_data = [[5.1, 3.5, 1.4, 0.2]]  # Example: likely Iris-setosa

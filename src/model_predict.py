@@ -6,7 +6,8 @@ import os
 
 def load_trained_artifacts(
     model_path="models/best_model.joblib",
-    scaler_path="models/scaler.joblib"
+    scaler_path="models/scaler.joblib",
+    encoder_path="models/label_encoder.joblib"
 ):
     """
     Loads the trained classification model and the scaler used during preprocessing.
@@ -21,11 +22,16 @@ def load_trained_artifacts(
 
     if not os.path.exists(scaler_path):
         raise FileNotFoundError(f"Scaler file not found: {scaler_path}")
+    
+    if not os.path.exists(encoder_path):
+        raise FileNotFoundError(f"LabelEncoder file not found: {encoder_path}")
 
     model = joblib.load(model_path)
     scaler = joblib.load(scaler_path)
+    encoder = joblib.load(encoder_path)
 
-    return model, scaler
+
+    return model, scaler, encoder
 
 
 def prepare_input_data(input_data):
@@ -69,13 +75,14 @@ def predict_species(input_data):
         2. Format input data
         3. Scale features
         4. Predict species label
+        5. Decode label to species name
 
     Returns:
         str - predicted species name
     """
 
     #Load artifacts
-    model, scaler = load_trained_artifacts()
+    model, scaler, encoder = load_trained_artifacts()
 
     #Standardize input format
     X = prepare_input_data(input_data)
@@ -86,7 +93,9 @@ def predict_species(input_data):
     #Predict species
     prediction = model.predict(X_scaled)[0]
 
-    return prediction
+    species_name = encoder.inverse_transform([prediction])[0]
+
+    return species_name
 
 
 

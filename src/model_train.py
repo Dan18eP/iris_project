@@ -28,7 +28,7 @@ def train_models():
     #1. Load preprocessed data
     
     df = load_iris()
-    X_train, X_test, y_train, y_test, scaler = preprocess_iris(df)
+    X_train, X_test, y_train, y_test, scaler, label_encoder = preprocess_iris(df)
 
 
     #2. Define the classification models
@@ -110,6 +110,7 @@ def train_models():
     
     joblib.dump(best_model, "models/best_model.joblib")
     joblib.dump(scaler, "models/scaler.joblib")
+    joblib.dump(label_encoder, "models/label_encoder.joblib")
     print("\nBest model saved to: models/best_model.joblib")
     print("Scaler saved to: models/scaler.joblib")
 

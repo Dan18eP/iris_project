@@ -11,10 +11,30 @@ import sys
 # Add src to path for imports
 sys.path.append('src')
 
+SPECIES_METADATA = {
+    'Iris-setosa': {
+        'color': '#FF6B6B',
+        'image_url': 'https://upload.wikimedia.org/wikipedia/commons/a/a0/HANASYOUBU.JPG',
+        'description': 'Small petals paired with wide sepals. This class is linearly separable from the rest.'
+    },
+    'Iris-versicolor': {
+        'color': '#4ECDC4',
+        'image_url': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Iris_versicolor_3.jpg/1200px-Iris_versicolor_3.jpg',
+        'description': 'Balanced feature sizes with partial overlap against Iris-virginica.'
+    },
+    'Iris-virginica': {
+        'color': '#9B5DE5',
+        'image_url': 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Iris_virginica.jpg/1200px-Iris_virginica.jpg',
+        'description': 'Largest petals and sepals, extending higher within the feature ranges.'
+    },
+}
+
+SPECIES_COLORS = {species: meta['color'] for species, meta in SPECIES_METADATA.items()}
+
 # Page configuration
 st.set_page_config(
     page_title="Iris Species Classifier",
-    page_icon="🌸",
+    page_icon="I",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -22,43 +42,142 @@ st.set_page_config(
 # Custom CSS
 st.markdown("""
     <style>
+    :root {
+        --page-gradient-start: rgba(79, 70, 229, 0.08);
+        --page-gradient-end: rgba(59, 130, 246, 0.08);
+        --text-color: #0f172a;
+        --muted-text: rgba(15, 23, 42, 0.7);
+        --card-bg: #ffffff;
+        --card-border: rgba(15, 23, 42, 0.08);
+        --card-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+        --hero-bg-start: #0f172a;
+        --hero-bg-end: #1d4ed8;
+        --prediction-bg-start: #312e81;
+        --prediction-bg-end: #1e40af;
+        --button-bg-start: #2563eb;
+        --button-bg-end: #7c3aed;
+        --button-shadow: 0 12px 24px rgba(37, 99, 235, 0.35);
+        --image-border: rgba(15, 23, 42, 0.1);
+        --subtle-bg: rgba(255, 255, 255, 0.7);
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --page-gradient-start: rgba(17, 24, 39, 0.8);
+            --page-gradient-end: rgba(15, 118, 110, 0.4);
+            --text-color: #f8fafc;
+            --muted-text: rgba(248, 250, 252, 0.75);
+            --card-bg: rgba(15, 23, 42, 0.7);
+            --card-border: rgba(248, 250, 252, 0.12);
+            --card-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+            --hero-bg-start: #0f172a;
+            --hero-bg-end: #0b3b70;
+            --prediction-bg-start: #1e1b4b;
+            --prediction-bg-end: #312e81;
+            --button-bg-start: #0ea5e9;
+            --button-bg-end: #8b5cf6;
+            --button-shadow: 0 12px 24px rgba(14, 165, 233, 0.4);
+            --image-border: rgba(248, 250, 252, 0.2);
+            --subtle-bg: rgba(15, 23, 42, 0.65);
+        }
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    .stApp {
+        background: linear-gradient(135deg, var(--page-gradient-start), var(--page-gradient-end));
+        font-family: 'Inter', sans-serif;
+        color: var(--text-color);
+    }
     .main-header {
         font-size: 3rem;
-        font-weight: bold;
-        color: #1f77b4;
+        font-weight: 700;
+        color: var(--text-color);
         text-align: center;
+        margin-bottom: 2.5rem;
+    }
+    .hero-card {
+        background: linear-gradient(135deg, var(--hero-bg-start), var(--hero-bg-end));
+        color: #f8fafc;
+        padding: 2.5rem;
+        border-radius: 18px;
+        box-shadow: 0 20px 45px rgba(15, 23, 42, 0.35);
         margin-bottom: 2rem;
     }
+    .hero-card h2 {
+        font-size: 2.4rem;
+        margin-bottom: 0.8rem;
+    }
+    .hero-card p {
+        font-size: 1.05rem;
+        line-height: 1.7;
+        max-width: 700px;
+        color: #f1f5f9;
+    }
     .metric-card {
-        background-color: #f0f2f6;
+        background: var(--card-bg);
         padding: 1.5rem;
-        border-radius: 10px;
-        border-left: 5px solid #1f77b4;
+        border-radius: 14px;
+        border: 1px solid var(--card-border);
+        box-shadow: var(--card-shadow);
     }
     .prediction-box {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(120deg, var(--prediction-bg-start), var(--prediction-bg-end));
         padding: 2rem;
-        border-radius: 15px;
+        border-radius: 18px;
         color: white;
         text-align: center;
-        font-size: 1.5rem;
-        font-weight: bold;
-        margin: 1rem 0;
+        font-size: 1.6rem;
+        font-weight: 600;
+        margin: 1.5rem 0;
+        letter-spacing: 0.04em;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2);
+    }
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin: 2.5rem 0 1rem;
+        color: var(--text-color);
+    }
+    .image-strip img {
+        border-radius: 16px;
+        border: 1px solid var(--image-border);
+        box-shadow: 0 18px 35px rgba(15, 23, 42, 0.2);
+    }
+    .subtle-card {
+        background: var(--subtle-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        color: var(--muted-text);
+    }
+    .stButton>button, .stDownloadButton>button {
+        border-radius: 999px;
+        padding: 0.7rem 1.8rem;
+        font-weight: 600;
+        border: 1px solid transparent;
+        background: linear-gradient(120deg, var(--button-bg-start), var(--button-bg-end));
+        color: #fff;
+        box-shadow: var(--button-shadow);
+    }
+    .stButton>button:hover, .stDownloadButton>button:hover {
+        border-color: rgba(255,255,255,0.4);
+        cursor: pointer;
     }
     </style>
 """, unsafe_allow_html=True)
 
 
 @st.cache_resource
-def load_model_and_scaler():
-    """Load trained model and scaler"""
+def load_model_assets():
+    """Load trained model, scaler, and label encoder."""
     try:
         model = joblib.load('models/best_model.joblib')
         scaler = joblib.load('models/scaler.joblib')
-        return model, scaler
+        label_encoder = joblib.load('models/label_encoder.joblib')
+        return model, scaler, label_encoder
     except FileNotFoundError:
-        st.error("⚠️ Model files not found. Please run training first.")
-        return None, None
+        st.error("Model assets not found. Please run training first.")
+        return None, None, None
 
 
 @st.cache_data
@@ -69,7 +188,7 @@ def load_data():
         df = load_iris()
         return df
     except:
-        st.error("⚠️ Could not load dataset.")
+        st.error("Could not load dataset.")
         return None
 
 
@@ -80,8 +199,6 @@ def create_3d_scatter(df, new_sample=None, prediction=None):
     fig = go.Figure()
     
     # Plot existing data by species
-    colors = {'Iris-setosa': '#FF6B6B', 'Iris-versicolor': '#4ECDC4', 'Iris-virginica': '#45B7D1'}
-    
     for species in df['Species'].unique():
         df_species = df[df['Species'] == species]
         fig.add_trace(go.Scatter3d(
@@ -92,7 +209,7 @@ def create_3d_scatter(df, new_sample=None, prediction=None):
             name=species,
             marker=dict(
                 size=6,
-                color=colors[species],
+                color=SPECIES_COLORS.get(species, '#999999'),
                 opacity=0.7,
                 line=dict(color='white', width=0.5)
             )
@@ -144,8 +261,6 @@ def create_feature_distributions(df):
         horizontal_spacing=0.1
     )
     
-    colors = {'Iris-setosa': '#FF6B6B', 'Iris-versicolor': '#4ECDC4', 'Iris-virginica': '#45B7D1'}
-    
     for idx, (feature, title) in enumerate(zip(features, titles)):
         row = idx // 2 + 1
         col = idx % 2 + 1
@@ -156,7 +271,7 @@ def create_feature_distributions(df):
                 go.Histogram(
                     x=df_species[feature],
                     name=species,
-                    marker_color=colors[species],
+                    marker_color=SPECIES_COLORS.get(species, '#999999'),
                     opacity=0.7,
                     showlegend=(idx == 0)
                 ),
@@ -205,7 +320,7 @@ def create_pairplot(df):
         df,
         dimensions=['SepalLengthCm', 'SepalWidthCm', 'PetalLengthCm', 'PetalWidthCm'],
         color='Species',
-        color_discrete_map={'Iris-setosa': '#FF6B6B', 'Iris-versicolor': '#4ECDC4', 'Iris-virginica': '#45B7D1'},
+        color_discrete_map=SPECIES_COLORS,
         title='Pairwise Feature Relationships',
         height=700
     )
@@ -219,18 +334,18 @@ def create_pairplot(df):
 
 def main():
     # Header
-    st.markdown('<h1 class="main-header">🌸 Iris Species Classification Dashboard</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="main-header">Iris Species Classification Dashboard</h1>', unsafe_allow_html=True)
     
     # Load data and model
     df = load_data()
-    model, scaler = load_model_and_scaler()
+    model, scaler, label_encoder = load_model_assets()
     
-    if df is None or model is None:
+    if df is None or model is None or scaler is None or label_encoder is None:
         st.stop()
     
     # Sidebar
-    st.sidebar.title("📊 Navigation")
-    page = st.sidebar.radio("Go to", ["🏠 Home", "🔮 Prediction", "📈 Data Analysis", "📋 Model Performance"])
+    st.sidebar.title("Navigation")
+    page = st.sidebar.radio("Go to", ["Home", "Prediction", "Data Analysis", "Model Performance"])
     
     st.sidebar.markdown("---")
     st.sidebar.info("""
@@ -246,40 +361,74 @@ def main():
     """)
     
     # ==================== PAGE: HOME ====================
-    if page == "🏠 Home":
-        col1, col2, col3 = st.columns([1, 2, 1])
-        
-        with col2:
-            st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Iris_versicolor_3.jpg/1200px-Iris_versicolor_3.jpg", 
-                     caption="Iris Versicolor", use_container_width=True)
-        
-        st.markdown("## Welcome! 👋")
-        st.markdown("""
-        This interactive dashboard allows you to:
-        
-        - 🔮 **Predict** iris species from flower measurements
-        - 📊 **Visualize** the dataset in 2D and 3D
-        - 📈 **Explore** feature distributions and correlations
-        - 📋 **Review** model performance metrics
-        
-        ### The Iris Dataset
-        
-        The Iris dataset contains measurements of 150 iris flowers from three species:
-        - **Iris Setosa** - Characterized by small petals
-        - **Iris Versicolor** - Medium-sized features
-        - **Iris Virginica** - Large petals and sepals
-        
-        **Features measured (in cm):**
-        - Sepal Length & Width
-        - Petal Length & Width
-        
-        Use the sidebar to navigate between sections!
-        """)
-        
-        # Quick stats
-        st.markdown("### 📊 Dataset Quick Stats")
+    if page == "Home":
+        st.markdown(
+            """
+            <div class="hero-card">
+                <p style="letter-spacing:0.3em;text-transform:uppercase;opacity:0.8;margin-bottom:0.7rem;">
+                    Interactive Machine Learning Showcase
+                </p>
+                <h2>Explore data, visuals, and predictions for the Iris species classifier.</h2>
+                <p>
+                    Navigate through a curated experience that blends exploratory data analysis, high-impact
+                    visualizations, and a production-ready Support Vector Machine. Discover what drives the
+                    model in a single, cohesive view.
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        overview_col1, overview_col2 = st.columns([1.4, 1])
+
+        with overview_col1:
+            st.markdown('<div class="section-title">What you can do</div>', unsafe_allow_html=True)
+            st.markdown(
+                """
+                - Generate real-time species predictions with custom measurements.
+                - Inspect multidimensional visuals, including interactive 3D scatter plots.
+                - Review model diagnostics, performance benchmarks, and confusion matrices.
+                - Understand feature behavior through tailored histograms and correlation heatmaps.
+                """
+            )
+
+        with overview_col2:
+            st.markdown(
+                """
+                <div class="subtle-card">
+                    <strong>About the dataset</strong><br>
+                    150 labeled samples across three Iris species with four numerical measurements per flower.
+                    The project demonstrates a classic yet powerful use case of supervised learning pipelines.
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+        st.markdown('<div class="section-title">Species gallery</div>', unsafe_allow_html=True)
+        img_col1, img_col2, img_col3 = st.columns(3)
+
+        with img_col1:
+            st.image(
+                "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Iris_versicolor_3.jpg/1200px-Iris_versicolor_3.jpg",
+                caption="Iris Versicolor",
+                width='stretch',
+            )
+        with img_col2:
+            st.image(
+                "https://upload.wikimedia.org/wikipedia/commons/a/a0/HANASYOUBU.JPG",
+                caption="Iris Setosa",
+                width='stretch',
+            )
+        with img_col3:
+            st.image(
+                "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Iris_virginica.jpg/1200px-Iris_virginica.jpg",
+                caption="Iris Virginica",
+                width='stretch',
+            )
+
+        st.markdown('<div class="section-title">Dataset at a glance</div>', unsafe_allow_html=True)
         col1, col2, col3, col4 = st.columns(4)
-        
+
         with col1:
             st.metric("Total Samples", len(df))
         with col2:
@@ -290,9 +439,9 @@ def main():
             st.metric("Model Accuracy", "97.37%")
     
     # ==================== PAGE: PREDICTION ====================
-    elif page == "🔮 Prediction":
-        st.markdown("## 🔮 Species Prediction")
-        st.markdown("Enter flower measurements below to predict the species:")
+    elif page == "Prediction":
+        st.markdown("## Species Prediction")
+        st.markdown("Enter flower measurements below to obtain an instant species prediction.")
         
         col1, col2 = st.columns([1, 2])
         
@@ -301,29 +450,29 @@ def main():
             
             sepal_length = st.slider(
                 "Sepal Length (cm)",
-                min_value=4.0, max_value=8.0, value=5.8, step=0.1,
+                min_value=4.0, max_value=8.0, value=5.8, step=0.01,
                 help="Typical range: 4.3 - 7.9 cm"
             )
             
             sepal_width = st.slider(
                 "Sepal Width (cm)",
-                min_value=2.0, max_value=4.5, value=3.0, step=0.1,
+                min_value=2.0, max_value=4.5, value=3.0, step=0.01,
                 help="Typical range: 2.0 - 4.4 cm"
             )
             
             petal_length = st.slider(
                 "Petal Length (cm)",
-                min_value=1.0, max_value=7.0, value=4.0, step=0.1,
+                min_value=1.0, max_value=7.0, value=4.0, step=0.01,
                 help="Typical range: 1.0 - 6.9 cm"
             )
             
             petal_width = st.slider(
                 "Petal Width (cm)",
-                min_value=0.1, max_value=2.5, value=1.3, step=0.1,
+                min_value=0.1, max_value=2.5, value=1.3, step=0.01,
                 help="Typical range: 0.1 - 2.5 cm"
             )
             
-            predict_button = st.button("🔍 Predict Species", type="primary", use_container_width=True)
+            predict_button = st.button("Predict Species", type="primary", use_container_width=True)
             
             if predict_button:
                 # Prepare input
@@ -331,10 +480,15 @@ def main():
                 sample_scaled = scaler.transform(sample)
                 
                 # Predict
-                prediction = model.predict(sample_scaled)[0]
+                prediction_code = model.predict(sample_scaled)[0]
+                try:
+                    prediction_label = label_encoder.inverse_transform([prediction_code])[0]
+                except Exception:
+                    prediction_label = str(prediction_code)
                 
                 # Store in session state
-                st.session_state.prediction = prediction
+                st.session_state.prediction = prediction_label
+                st.session_state.prediction_code = int(prediction_code)
                 st.session_state.sample = sample[0]
         
         with col2:
@@ -345,33 +499,17 @@ def main():
                 sample = st.session_state.sample
                 
                 # Display prediction with custom styling
-                st.markdown(f'<div class="prediction-box">🌸 {prediction}</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="prediction-box">{prediction}</div>', unsafe_allow_html=True)
                 
-                # Species info
-                species_info = {
-                    'Iris-setosa': {
-                        'emoji': '🌺',
-                        'description': 'Small petals and wide sepals. Completely distinct from other species.',
-                        'color': '#FF6B6B'
-                    },
-                    'Iris-versicolor': {
-                        'emoji': '🌷',
-                        'description': 'Medium-sized features. Some overlap with virginica.',
-                        'color': '#4ECDC4'
-                    },
-                    'Iris-virginica': {
-                        'emoji': '🌸',
-                        'description': 'Large petals and sepals. Largest of the three species.',
-                        'color': '#45B7D1'
-                    }
-                }
-                
-                info = species_info[prediction]
-                st.markdown(f"### {info['emoji']} About {prediction}")
-                st.info(info['description'])
+                metadata = SPECIES_METADATA.get(prediction, {})
+                st.markdown(f"### About {prediction}")
+                if 'description' in metadata:
+                    st.info(metadata['description'])
+                if metadata.get('image_url'):
+                    st.image(metadata['image_url'], caption=prediction, use_container_width=True)
                 
                 # Display input values
-                st.markdown("### 📏 Your Measurements")
+                st.markdown("### Measurement Summary")
                 metrics_col1, metrics_col2 = st.columns(2)
                 with metrics_col1:
                     st.metric("Sepal Length", f"{sample[0]:.1f} cm")
@@ -380,11 +518,11 @@ def main():
                     st.metric("Sepal Width", f"{sample[1]:.1f} cm")
                     st.metric("Petal Width", f"{sample[3]:.1f} cm")
             else:
-                st.info("👈 Enter measurements and click 'Predict Species' to see results")
+                st.info("Enter measurements on the left and click 'Predict Species' to view a result.")
         
         # 3D Visualization
         st.markdown("---")
-        st.markdown("### 🎯 3D Visualization: Your Sample in Context")
+        st.markdown("### 3D Visualization: Your Sample in Context")
         
         if 'prediction' in st.session_state:
             fig_3d = create_3d_scatter(df, st.session_state.sample, st.session_state.prediction)
@@ -397,16 +535,16 @@ def main():
         **How to read this chart:**
         - Each point represents one flower sample
         - Colors indicate different species
-        - Your prediction appears as a **yellow diamond** ⬥
+        - Your prediction appears as a **yellow diamond marker**
         - Rotate the plot by clicking and dragging
         """)
     
     # ==================== PAGE: DATA ANALYSIS ====================
-    elif page == "📈 Data Analysis":
-        st.markdown("## 📈 Exploratory Data Analysis")
+    elif page == "Data Analysis":
+        st.markdown("## Exploratory Data Analysis")
         
         # Dataset preview
-        with st.expander("📋 View Dataset", expanded=False):
+        with st.expander("View Dataset", expanded=False):
             st.dataframe(df, use_container_width=True)
             
             col1, col2 = st.columns(2)
@@ -420,14 +558,14 @@ def main():
                     x=species_counts.index,
                     y=species_counts.values,
                     color=species_counts.index,
-                    color_discrete_map={'Iris-setosa': '#FF6B6B', 'Iris-versicolor': '#4ECDC4', 'Iris-virginica': '#45B7D1'},
+                    color_discrete_map=SPECIES_COLORS,
                     labels={'x': 'Species', 'y': 'Count'}
                 )
                 fig_bar.update_layout(showlegend=False, height=300)
                 st.plotly_chart(fig_bar, use_container_width=True)
         
         # Feature distributions
-        st.markdown("### 📊 Feature Distributions")
+        st.markdown("### Feature Distributions")
         fig_dist = create_feature_distributions(df)
         st.plotly_chart(fig_dist, use_container_width=True)
         
@@ -439,7 +577,7 @@ def main():
         """)
         
         # Correlation analysis
-        st.markdown("### 🔗 Feature Correlations")
+        st.markdown("### Feature Correlations")
         col1, col2 = st.columns([1, 1])
         
         with col1:
@@ -451,9 +589,9 @@ def main():
             #### Correlation Insights
             
             **Strong Positive Correlations:**
-            - Petal Length ↔ Petal Width: **0.96**
-            - Sepal Length ↔ Petal Length: **0.87**
-            - Sepal Length ↔ Petal Width: **0.82**
+            - Petal Length <-> Petal Width: **0.96**
+            - Sepal Length <-> Petal Length: **0.87**
+            - Sepal Length <-> Petal Width: **0.82**
             
             **Weak/Negative Correlations:**
             - Sepal Width shows weak correlation with other features
@@ -463,7 +601,7 @@ def main():
             """)
         
         # Pairplot
-        st.markdown("### 🔀 Pairwise Relationships")
+        st.markdown("### Pairwise Relationships")
         with st.spinner("Generating scatter matrix..."):
             fig_pair = create_pairplot(df)
             st.plotly_chart(fig_pair, use_container_width=True)
@@ -476,11 +614,11 @@ def main():
         """)
     
     # ==================== PAGE: MODEL PERFORMANCE ====================
-    elif page == "📋 Model Performance":
-        st.markdown("## 📋 Model Performance Metrics")
+    elif page == "Model Performance":
+        st.markdown("## Model Performance Metrics")
         
         # Model info
-        st.markdown("### 🤖 Model Information")
+        st.markdown("### Model Information")
         col1, col2, col3 = st.columns(3)
         
         with col1:
@@ -508,11 +646,11 @@ def main():
             
             **Test F1 Score:** 97.36%
             
-            **Status:** ✅ Production Ready
+            **Status:** Production Ready
             """)
         
         # Main metrics
-        st.markdown("### 📊 Classification Metrics")
+        st.markdown("### Classification Metrics")
         
         # Overall metrics
         col1, col2, col3, col4 = st.columns(4)
@@ -550,7 +688,7 @@ def main():
             )
         
         # Per-class performance
-        st.markdown("### 🎯 Per-Class Performance")
+        st.markdown("### Per-Class Performance")
         
         performance_data = {
             'Species': ['Iris-setosa', 'Iris-versicolor', 'Iris-virginica'],
@@ -597,17 +735,17 @@ def main():
             st.markdown("""
             #### Key Findings
             
-            **🌺 Iris-setosa:**
+            **Iris-setosa:**
             - **Perfect classification** (100% across all metrics)
             - Completely separable from other species
             - No misclassifications
             
-            **🌷 Iris-versicolor:**
+            **Iris-versicolor:**
             - **Strong performance** (96% F1-score)
             - 1 sample misclassified as Iris-virginica
             - 92% recall
             
-            **🌸 Iris-virginica:**
+            **Iris-virginica:**
             - **Excellent recall** (100%)
             - 93% precision (1 versicolor misclassified as virginica)
             - Slightly overlaps with versicolor in feature space
@@ -618,7 +756,7 @@ def main():
             """)
         
         # Confusion Matrix
-        st.markdown("### 🎲 Confusion Matrix")
+        st.markdown("### Confusion Matrix")
         
         # Simulated confusion matrix (replace with actual if available)
         confusion_data = np.array([
@@ -657,7 +795,7 @@ def main():
         """)
         
         # Model comparison
-        st.markdown("### 🏆 Model Comparison")
+        st.markdown("### Model Comparison")
         
         comparison_data = {
             'Model': ['SVM', 'KNN', 'Logistic Regression', 'Random Forest'],
@@ -695,7 +833,7 @@ def main():
         st.plotly_chart(fig_comparison, use_container_width=True)
         
         st.success("""
-        ✅ **SVM selected as best model** based on highest test accuracy (97.37%) and F1 score (97.36%).
+        **SVM selected as best model** based on highest test accuracy (97.37%) and F1 score (97.36%).
         
         The model is saved and ready for production deployment.
         """)

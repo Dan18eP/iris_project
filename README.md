@@ -10,14 +10,24 @@ An end-to-end Iris species classification project featuring data preparation, mo
 	```pwsh
 	python -m pip install -r requirements.txt
 	```
+3. Verify data preprocessing
+   
+   ```pwsh
+	python -m src.preprocessing
+	```
 
-3. Train the models and persist the best one:
+4. Train the models and persist the best one:
 
 	```pwsh
 	python -m src.model_train
 	```
+5. Test prediction (optional)
 
-4. Launch the Streamlit dashboard:
+   ```pwsh
+	python -m src.model_predict
+	```
+
+7. Launch the Streamlit dashboard:
 
 	```pwsh
 	streamlit run src/app.py

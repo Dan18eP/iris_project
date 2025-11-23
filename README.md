@@ -124,19 +124,19 @@ python -m pytest tests/prediction_test.py
 ## Documentation
 Comprehensive documentation is available in the docs/ directory:
 
-# EDA Findings: Exploratory data analysis results
-Model Training: Training methodology and results
-Prediction Module: Documentation for prediction module
-Dashboard Guide: Dashboard features and deployment
+- EDA Findings: Exploratory data analysis results
+- Model Training: Training methodology and results
+- Prediction Module: Documentation for prediction module
+- Dashboard Guide: Dashboard features and deployment
 
 # Contributing
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-# Fork the repository
-Create your feature branch (git checkout -b feature/AmazingFeature)
-Commit your changes (git commit -m 'Add some AmazingFeature')
-Push to the branch (git push origin feature/AmazingFeature)
-Open a Pull Request
+## Fork the repository
+1. Create your feature branch (git checkout -b feature/AmazingFeature)
+2. Commit your changes (git commit -m 'Add some AmazingFeature')
+3. Push to the branch (git push origin feature/AmazingFeature)
+4. Open a Pull Request
 
 
 # License
@@ -147,4 +147,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Daniel Echeverría
 - Andres Negrete
 
-(Systems engineering students, Corporación Universitaria de la Costa)
+(Systems engineering students, Universidad de la Costa, Barranquilla, Colombia)

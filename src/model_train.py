@@ -6,8 +6,8 @@ from sklearn.ensemble import RandomForestClassifier
 import os
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
 from sklearn.model_selection import cross_val_score, StratifiedKFold
-from data_processing import load_iris
-from preprocessing import preprocess_iris
+from src.data_processing import load_iris
+from src.preprocessing import preprocess_iris
 import joblib
 
 

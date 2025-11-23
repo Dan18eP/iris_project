@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, LabelEncoder
-from data_processing import load_iris
+from src.data_processing import load_iris
 
 
 def load_data():
